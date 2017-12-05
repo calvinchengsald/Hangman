@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<style>
+
+.hidden {
+	visibility: hidden
+}
+table, tr {
+    border: 1px solid black;
+    width: 1000px;
+}
+table, td {
+	width: 100px;
+	text-align: center;
+    border: 1px solid black;
+}
+
+</style>
+<script>
+counter = 0;
+gameOver = true;
+wonGame = false;
+var library = ["buffalo", "elephant", "cat", "dog" , "bat" ,"rat","tiger","shark","toad","turtle","toucan","tuna","turkey","viper","snake","vulture","walrus","wasp","bear","weasel","whale","fish","wolf","wombat","worm","zebra"];
+var word;
+var guessedLetters = [""];
+var guessedCounter = 0;
+var foundCounter = 0;
+
+
+function change(text){
+	document.getElementById("demo").innerHTML = text;
+}
+function incrementPic(){
+	if(counter==6) return;
+	counter++;
+	document.getElementById("picture").src= "hang_" + counter + ".jpg";
+	if (counter ==6){
+		gameOver = true;
+		endGame();
+	}
+}
+function endGame(){
+	if (!wonGame){ 
+		alert("you lose");
+	}
+	else {
+		alert("you Win!");
+	}
+}
+function newGame(){
+	//reset
+	counter = 0;
+	foundCounter = 0;
+	wonGame = false;
+	
+	document.getElementById("firstRow").innerHTML = '';
+	
+	word = library[Math.floor(Math.random() * (library.length))]
+	for(j = 0 ; j < word.length ; j++){
+		var tableData = document.createElement("td");
+		var tableDataText = document.createElement("span");
+		tableDataText.innerHTML = word.charAt(j);
+		tableDataText.setAttribute("id", j);
+		tableDataText.style.visibility = "hidden";
+		tableData.appendChild(tableDataText);
+		document.getElementById("firstRow").appendChild(tableData);
+	}
+	document.getElementById("output").innerHTML = word;
+	guessedLetters = [""];
+	guessedCounter = 0;
+	document.getElementById("guessed").innerHTML = "Guessed Letters : " + guessedLetters;
+	gameOver = false;
+}
+
+function guessLetter(letter){
+	if(!gameOver && !alreadyGuessed(letter)){
+		guessedLetters[guessedCounter] = letter;
+		guessedCounter++;
+		guessedLetters.sort();
+		document.getElementById("guessed").innerHTML = "Guessed Letters : " + guessedLetters;
+		checkWord(letter);
+	}
+}
+function alreadyGuessed(letter){
+	for( i = 0; i < guessedCounter; i++){
+		if (guessedLetters[i] == letter){
+			return true;
+		}
+	}
+	return false;
+}
+function checkWord(letter){
+	var loseLife = true;
+	for (i=0 ; i < word.length; i++){
+		if(word[i] == letter){
+			document.getElementById(i).style.visibility = "visible";
+			foundCounter++;
+			loseLife = false;
+			if(foundCounter == word.length){
+				gameOver = true;
+				wonGame = true;
+				endGame();
+			}
+		}
+	}
+	if(loseLife){
+		incrementPic();
+	}
+}
+
+document.addEventListener('keydown', function(event) {
+  if (event.keyCode >=65 && event.keyCode <=90) {
+  	var letter = String.fromCharCode(97+event.keyCode-65)
+    guessLetter(letter);
+  }
+  
+});
+
+</script>
+
+<body>
+
+<h1 >Hangman</h1>
+<img id="picture" src="hang_0.jpg" style="width:300px;height:300px;"> </img>
+<p id = "guessed" > Guessed Letters : </p>
+<button onclick = newGame()> New Game</button>
+<p id="output" class = "hidden" > results</p>
+
+<p id = "word here">
+<table id = "wordReveal" width = "1000">
+ <tr id ="firstRow">
+ </tr>
+</table>
+</p>
+
+</body>
+</html>
